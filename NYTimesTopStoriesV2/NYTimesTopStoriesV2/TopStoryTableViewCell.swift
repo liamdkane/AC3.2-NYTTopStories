@@ -10,6 +10,8 @@ import UIKit
 
 class TopStoryTableViewCell: UITableViewCell {
     
+    
+    
     var article: Article? {
         didSet {
             guard let art = self.article else {return}
@@ -27,7 +29,6 @@ class TopStoryTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
     
     

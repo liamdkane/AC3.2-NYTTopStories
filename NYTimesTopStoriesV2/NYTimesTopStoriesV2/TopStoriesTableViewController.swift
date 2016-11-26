@@ -8,16 +8,21 @@
 
 import UIKit
 
-class TopStoriesTableViewController: UITableViewController {
+class TopStoriesTableViewController: UITableViewController, UITextFieldDelegate {
 
     let cellIdentifier = "TopStoryCell"
     let nyTimesEndpoint = "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=31ae7c06e3314e21b83c2b3846fe3f26"
     
+    @IBOutlet weak var searchField: UITextField!
+    var allArticles = [Article]()
     var articles = [Article]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadTableView()
+        
+        self.tableView.estimatedRowHeight = 100
+        self.tableView.rowHeight = UITableViewAutomaticDimension
 
     }
 
@@ -44,6 +49,13 @@ class TopStoriesTableViewController: UITableViewController {
             UIApplication.shared.open(validURL, options: [:], completionHandler: nil)
         }
     }
+    
+    // MARK: - Text Field Delegates
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.reloadFilter()
+        return true
+    }
 
     /*
     // MARK: - Navigation
@@ -57,10 +69,17 @@ class TopStoriesTableViewController: UITableViewController {
     
     // MARK: - Methods
     
+    func reloadFilter () {
+        let predicate = NSPredicate(format:"abstract contains[c] '\(self.searchField.text!)'")
+        self.articles = self.allArticles.filter { predicate.evaluate(with: $0) }
+        self.tableView.reloadData()
+    }
+    
     func loadTableView () {
         APIManager.manager.apiCall(endPoint: nyTimesEndpoint) {(data: Data?) in
             guard let validData = data else {return}
-            self.articles = Article.makeArticles(data: validData) ?? []
+            self.allArticles = Article.makeArticles(data: validData) ?? []
+            self.articles = self.allArticles
             DispatchQueue.main.async {
                 self.tableView.reloadData()
                 print(self.articles.count)
