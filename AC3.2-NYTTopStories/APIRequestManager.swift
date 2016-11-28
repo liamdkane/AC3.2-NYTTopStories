@@ -24,6 +24,6 @@ class APIRequestManager {
             guard let validData = data else { return }
             
             callback(validData)
-            }.resume()
+        }.resume()
     }
 }
